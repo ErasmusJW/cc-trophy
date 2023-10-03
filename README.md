@@ -13,7 +13,7 @@ Hope you enjoy!
 ## Quickstart guide
 
 1. Power on the device via a USB cable.
-2. Connect to the ESP32 access point called "CC Trophy" to set up an internet connection.
+2. Use a PC to connect to the ESP32 access point called "CC Trophy" to set up an internet connection.
 3. Navigate to 192.168.8.1 in your browser to get to the WiFi Configuration UI.
 4. Select your WiFi network and enter your password. 
    - You can choose to save this information to skip the WiFI setup next time it boots. (recommended, but optional)
@@ -33,3 +33,26 @@ Hope you enjoy!
 | Pulse blue     | WiFi connection lost                         |
 | Green gradient | FieldPoP is ok                               |
 | Pulse red      | FieldPoP not ok, send help pls               |
+
+## Serial Connection
+
+Some basic input-output options to the ESP32 are available via a serial connection. One of the serial outputs on start-up is a quote of the day from the SIOSA office, just to remind you of your days working here.
+
+> Baudrate is 115200
+
+| Serial input | Function                                                                  |
+| :----------- | :------------------------------------------------------------------------ |
+| 'r'          | Reset saved WiFi configuration (Brings back the "CC Trophy" access point) |
+| '+'          | Chainable, increase LED brightness                                        |
+| '-'          | Chainable, decrease LED brightness                                        |
+
+## Further Customization
+
+This repo is part of this gift so you have free reign to customize it further, if you want to.
+
+Some helpful tools:
+- Arduino IDE as the development environment
+- This [tutorial video](https://www.youtube.com/watch?v=hjJx6QOWVkU) to connect the ESP32 to your Arduino IDE
+- Arduino 3rd party libraries:
+  - SparkFun Qwiic LED Stick Library by SparkFun Electronics (released with version 1.0.5)
+  - WiFiManager by tzapu (released with version 2.0.16-rc.2)
