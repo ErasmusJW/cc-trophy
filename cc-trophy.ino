@@ -42,7 +42,8 @@ const char* quotes[] = {
   "\"Ugh, Tuesdays. Am I right?\" - Bianca",
   "\"Not my problem anymore!\" - Cordell",
   "\"Ai, maar ons kan kak praat\" - Cordell",
-  "\"It's not that simple\" - Cordell"
+  "\"It's not that simple\" - Cordell",
+  "\"1. fieldpop, 2. ???, 3. profit!\" - Cordell"
 };
 
 // LED SETTINGS
