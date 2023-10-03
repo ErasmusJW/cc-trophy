@@ -38,7 +38,7 @@ Hope you enjoy!
 
 Some basic input-output options to the ESP32 are available via a serial connection. One of the serial outputs on start-up is a quote of the day from the SIOSA office, just to remind you of your days working here.
 
-> ==Baudrate is 115200==
+> Baudrate is 115200
 
 | Serial input | Function                                                                  |
 | :----------- | :------------------------------------------------------------------------ |
