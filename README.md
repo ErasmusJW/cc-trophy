@@ -1,8 +1,8 @@
-# The CC-Trophy 🏆
+# The CC-Trophy :trophy:
 
 Hackathon trophy for the sad departure of CC.
 
-This is a trophy that is definitely _*not_* designed to induce FOMO or attachment issues.
+This is a trophy that is definitely \*not\* designed to induce FOMO or attachment issues.
 Rather, this is a tribute to 12 years dedicated to an ever evolving product; from FieldServer to SMC Cloud to FieldServer Grid Manager.
 
 Under the hood, your gift is controlled by an ESP32 that connects to an LED light strip with 10 individually programmable LEDs.
@@ -38,7 +38,7 @@ Hope you enjoy!
 
 Some basic input-output options to the ESP32 are available via a serial connection. One of the serial outputs on start-up is a quote of the day from the SIOSA office, just to remind you of your days working here.
 
-> Baudrate is 115200
+> ==Baudrate is 115200==
 
 | Serial input | Function                                                                  |
 | :----------- | :------------------------------------------------------------------------ |
