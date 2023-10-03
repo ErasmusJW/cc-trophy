@@ -173,6 +173,8 @@ void setup() {
 
 
     wm.setConfigPortalBlocking(false);
+  
+    wm.setCustomHeadElement("<h3>SMCCT-420 \"Update wifi config page per design\"</h3>");
     Serial.println(xPortGetCoreID());
 
     // Print startup banner
@@ -191,8 +193,9 @@ void setup() {
     Serial.println();
 
     // Print quote-of-the-day
-    uint8_t randomQuoteIndex = random(sizeof(quotes));
+    uint8_t randomQuoteIndex = random(( *(&quotes + 1) - quotes) - 1);
     Serial.println(quotes[randomQuoteIndex]);
+    wm.setTitle(quotes[randomQuoteIndex]);
     Serial.println();
 
     if(initWifi()){
