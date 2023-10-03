@@ -27,8 +27,23 @@ const auto g_targetUrl = "https://www.fieldpop.io/get_time";
 WiFiManager wm;
 LED LEDStick; //Create an object of the LED class
 
-
-
+const char* quotes[] = {
+  "*Ping-pong, ping-pong* - Lunch room",
+  "╭∩╮(O_O)╭∩╮",
+  "\"Birds aren't real!\" - Bianca",
+  "\"Don't call me Shirley\" - Jacques",
+  "\"Oh, so it's kinda like a trophy? Nice!\" - Cyrus",
+  "\"You know what the office needs, Craig?\n    A kebab machine\" - Dylan",
+  "\"fieldpoop.io is still available!\" - Dylan",
+  "\"But why???\" - Cordell",
+  "\"Please sir, may I have some context?\" - Cordell",
+  "\"Please sir, may I have a review?\" - Bianca",
+  "\"One does not simply update tunnels\" - Everyone",
+  "\"Ugh, Tuesdays. Am I right?\" - Bianca",
+  "\"Not my problem anymore!\" - Cordell",
+  "\"Ai, maar ons kan kak praat\" - Cordell",
+  "\"It's not that simple\" - Cordell"
+};
 
 // LED SETTINGS
 #define BRIGHTNESS_MAX 31
@@ -219,7 +234,26 @@ void setup() {
 
     wm.setConfigPortalBlocking(false);
     Serial.println(xPortGetCoreID());
-  
+
+    // Print startup banner
+    Serial.println("===================================================");
+    Serial.println();
+    Serial.println("                  FieldServer ft.");
+    Serial.println();
+    Serial.println("      ____                             _ __      ");
+    Serial.println("     /  _/___  _________  ____ _____  (_) /_____ ");
+    Serial.println("     / // __ \\/ ___/ __ \\/ __ `/ __ \\/ / __/ __ \\");
+    Serial.println("   _/ // / / / /__/ /_/ / /_/ / / / / / /_/ /_/ /");
+    Serial.println("  /___/_/ /_/\\___/\\____/\\__, /_/ /_/_/\\__/\\____/ ");
+    Serial.println("                       /____/                    ");
+    Serial.println();
+    Serial.println("===================================================");
+    Serial.println();
+
+    // Print quote-of-the-day
+    uint8_t randomQuoteIndex = random(sizeof(quotes));
+    Serial.println(quotes[randomQuoteIndex]);
+    Serial.println();
 
     if(initWifi()){
       setAppStatus(E_WIFI_CONNECTED);
