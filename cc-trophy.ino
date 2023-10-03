@@ -2,28 +2,37 @@
 #include <WiFi.h>
 #include <Wire.h>
 #include "Qwiic_LED_Stick.h" // Click here to get the library: http://librarymanager/All#SparkFun_Qwiic_LED_Stick
-
-#include <WiFiClientSecure.h> //fuck https, fuck fuck fuck
-
+#include <WiFiClientSecure.h>
 #include <HTTPClient.h>
+#include <EEPROM.h> // Include the EEPROM library
+#include <functional>
+#include <map>
 
-// Define the target server and path
-const char* server = "https://smc.fieldpop.io";
-const uint16_t httpsPort = 443; // HTTPS port
-const char* path = "/get_time"; // Root path
+namespace wifiSettings {
+  const auto s_accesPointName = "CC TROPHY";
+  const auto s_accesPointPassword = "werfetter";
+}
+
+namespace eepromSetting {
+  const uint16_t ui_EEPROMsize = 1;
+  const uint16_t ui_brightnessAdd = 0;
+}
 
 
+uint8_t g_brightness = 0;
+const auto g_targetUrl = "https://www.fieldpop.io/get_time";
+
+
+
+WiFiManager wm;
 LED LEDStick; //Create an object of the LED class
 
-#include <EEPROM.h> // Include the EEPROM library
 
-/// EEPROM settings
-#define EEPROM_SIZE 1
-#define BRIGHTNESS_ADD 0
 
 
 // LED SETTINGS
 #define BRIGHTNESS_MAX 31
+#define BRIGHTNESS_MIN 6
 
 #define WHITE 255, 255, 255
 #define SMC_BLUE 76, 128, 194
@@ -37,19 +46,86 @@ LED LEDStick; //Create an object of the LED class
 #define aquamarine 127,255,212
 #define olive 28,128,0
 
-#define AP_PASSWORD "werfetter"
 
-WiFiManager wm;
-
-uint8_t brightness = 0;
+void WalkingRainbow(byte rainbowLength, byte LEDLength, int delayTime) {
+  //Create three LEDs the same length as the LEDStick to store color values
+  byte redArray[LEDLength];
+  byte greenArray[LEDLength];
+  byte blueArray[LEDLength];
+  //This will repeat rainbowLength times, generating 3 arrays (r,g,b) of length LEDLength
+  //This is like creating rainbowLength differnent rainbow arrays where the positions
+  //of each color have changed by 1
+  for (byte j = 0; j < rainbowLength; j++) {
+    //This will repeat LEDLength times, generating 3 colors (r,g,b) per pixel
+    //This creates the array that is sent to the LED Stick
+    for (byte i = 0 ; i < LEDLength ; i++) {
+      //there are n colors generated for the rainbow
+      //the rainbow starts at the location where i and j are equal: n=1
+      //the +1 accounts for the LEDs starting their index at 0
+      //the value of n determines which color is generated at each pixel
+      int n = i + 1 - j;
+      //this will loop n so that n is always between 1 and rainbowLength
+      if (n <= 0) {
+        n = n + rainbowLength; 
+      }
+      //the nth color is between red and yellow
+      if (n <= floor(rainbowLength / 6)) {
+        redArray[i] = 255;
+        greenArray[i] = floor(6 * 255 / (float) rainbowLength * n);
+        blueArray[i] = 0;
+      }
+      //the nth color is between yellow and green
+      else if (n <= floor(rainbowLength / 3)) {
+        redArray[i] = floor(510 - 6 * 255 / (float) rainbowLength * n);
+        greenArray[i] = 255;
+        blueArray[i] = 0;
+      }
+      //the nth color is between green and cyan
+      else if (n <= floor(rainbowLength / 2)) {
+        redArray[i] = 0;
+        greenArray[i] = 255;
+        blueArray[i] = floor( 6 * 255 / (float) rainbowLength * n - 510);
+      }
+      //the nth color is between cyan and blue
+      else if ( n <= floor(2 * rainbowLength / 3)) {
+        redArray[i] = 0;
+        greenArray[i] = floor(1020 - 6 * 255 / (float) rainbowLength * n);
+        blueArray[i] = 255;
+      }
+      //the nth color is between blue and magenta
+      else if (n <= floor(5 * rainbowLength / 6)) {
+        redArray[i] = floor(6 * 255 / (float) rainbowLength * n - 1020);
+        greenArray[i] = 0;
+        blueArray[i] = 255;
+      }
+      //the nth color is between magenta and red
+      else {
+        redArray[i] = 255;
+        greenArray[i] = 0;
+        blueArray[i] = floor(1530 - (6 * 255 / (float)rainbowLength * n));;
+      }
+    }
+    //sets all LEDs to the color values according to the arrays
+    //the first LED corresponds to the first entries in the arrays
+    LEDStick.setLEDColor(redArray, greenArray, blueArray, LEDLength);
+    delay(delayTime);
+  }
+}
 
 uint8_t getStoredLedBrightness(){
-  uint8_t storedValue = EEPROM.read(BRIGHTNESS_ADD);
-  return storedValue > BRIGHTNESS_MAX ? 1 : storedValue;
+  uint8_t storedValue = EEPROM.read(eepromSetting::ui_brightnessAdd);
+  if(storedValue > BRIGHTNESS_MAX){
+    return BRIGHTNESS_MAX;
+  } 
+
+  if(storedValue < BRIGHTNESS_MIN){
+    return BRIGHTNESS_MIN;
+  }
+  return storedValue;
 }
 
 void storeLedBrightness(uint8_t level){
-  EEPROM.write(BRIGHTNESS_ADD, level);
+  EEPROM.write(eepromSetting::ui_brightnessAdd, level);
   EEPROM.commit();
 }
 
@@ -68,10 +144,6 @@ typedef enum e_status
 e_status APP_STATE = E_BOOT;
 
 unsigned long secTimer=0;
-
-
-
-
 
 void setAppStatus(uint8_t status) {
   switch(status){
@@ -104,62 +176,64 @@ void setAppStatus(uint8_t status) {
 }
 
 
-void setup() {
-    Wire.begin();
-    EEPROM.begin(EEPROM_SIZE);
-    Serial.begin(115200);
-    WiFi.mode(WIFI_STA);
-
+void initLed(){
     if (LEDStick.begin() == false){
-  
-      Serial.println("Qwiic LED Stick failed to begin. Please check wiring and try again!");
-      while(1);
+      while(1){
+        Serial.println("Qwiic LED Stick failed to begin. Please check wiring and try again!");
+        delay(5000);
+      }
     }
 
     //Start by resetting the state of the LEDs
     LEDStick.LEDOff();
-    brightness = getStoredLedBrightness();
+    g_brightness = getStoredLedBrightness();
 
-    LEDStick.setLEDBrightness(brightness) ; //value between 0-31
+    LEDStick.setLEDBrightness(g_brightness) ;//value between 0-31
+    WalkingRainbow(30, 10, 100); // will this delay the boot time, but looks cool
+    WalkingRainbow(30, 10, 100);
+}
+
+bool initWifi(){
+    //automatically connect using saved credentials if they exist
+    //If connection fails it starts an access point with the specified name
+    if(wm.autoConnect(wifiSettings::s_accesPointName,wifiSettings::s_accesPointPassword)){
+        Serial.println("wifi auto connect failed");
+        return true;
+    }
+    else {
+        Serial.println("Configportal AP running");
+        return false;
+    }
+}
+
+
+void setup() {
+    Wire.begin();
+    EEPROM.begin(eepromSetting::ui_EEPROMsize);
+    Serial.begin(115200);
+    WiFi.mode(WIFI_STA);
+
+    initLed();
     setAppStatus(E_BOOT);
 
 
     wm.setConfigPortalBlocking(false);
-
-    // WiFi.mode(WIFI_STA); // explicitly set mode, esp defaults to STA+AP
-    // it is a good practice to make sure your code sets wifi mode how you want it.
-
-    // put your setup code here, to run once:
-
     Serial.println(xPortGetCoreID());
-    
-    //WiFiManager, Local intialization. Once its business is done, there is no need to keep it around
+  
 
-
-    // reset settings - wipe stored credentials for testing
-    // these are stored by the esp library
-    // wm.resetSettings();
-
-
-
-
-    //automatically connect using saved credentials if they exist
-    //If connection fails it starts an access point with the specified name
-    if(wm.autoConnect("CC TROPHY",AP_PASSWORD)){
-        setAppStatus(E_WIFI_CONNECTED);
-        Serial.println("connected...yeey :)");
-
+    if(initWifi()){
+      setAppStatus(E_WIFI_CONNECTED);
+      Serial.println("Initial wifi connection, skipping creating access point");
+    }else{
+      setAppStatus(E_WIFI_NOT_CONFIGURED);
+      Serial.println("Initial wifi FAILED,  creating access point");
     }
-    else {
-        Serial.println("Configportal running");
-        setAppStatus(E_WIFI_NOT_CONFIGURED);
-    }
+
     checkWifiStatus();
 
 }
 
 int getFieldpopStatus(){
-
  int httpCode;
   WiFiClientSecure *client = new WiFiClientSecure;
   if(client) {
@@ -169,7 +243,7 @@ int getFieldpopStatus(){
       // Add a scoping block for HTTPClient https to make sure it is destroyed before WiFiClientSecure *client is 
       HTTPClient https;
   
-      if (https.begin(*client, "https://smc.fieldpop.io/get_time")) {  // HTTPS
+      if (https.begin(*client, g_targetUrl)) {  // HTTPS
         httpCode = https.GET();
   
         // httpCode will be negative on error
@@ -234,10 +308,12 @@ void checkWifiStatus(){
   statusPrevious = status;
 }
 
+std::map<const char *,std::function<void(int)>> serrialCommands;
+
 
 void loop() {
-  wm.process();
-  uint8_t new_brightness = brightness;
+  wm.process(); // update the manager
+  uint8_t new_brightness = g_brightness;
   auto now = millis();
   if(now - secTimer > 10000){
     secTimer = now;
@@ -250,7 +326,7 @@ void loop() {
       new_brightness = new_brightness >= BRIGHTNESS_MAX ? BRIGHTNESS_MAX : ++new_brightness;
 
     } else if (command == '-'){
-      new_brightness = new_brightness == 0 ? 0 : --new_brightness;
+      new_brightness = new_brightness < BRIGHTNESS_MIN ? BRIGHTNESS_MIN : --new_brightness;
     }  else if (command == 'R' || command == 'r') {
       Serial.println("Reset start");
       WiFiManager wm;
@@ -261,9 +337,9 @@ void loop() {
       ESP.restart(); // Reboot  to enter AP mode
     } else if (command == 'c' || command == 'c') {
 
-        if(wm.autoConnect("CC TROPHY",AP_PASSWORD)){
+        if(wm.autoConnect(wifiSettings::s_accesPointName,wifiSettings::s_accesPointPassword)){
             setAppStatus(E_WIFI_CONNECTED);
-            Serial.println("connected...yeey :)");
+            Serial.println("initial wifi connect skipping creation of AP");
 
         }
         else {
@@ -274,11 +350,11 @@ void loop() {
     }
      
   }
-  if(new_brightness != brightness){
-      brightness = new_brightness;
-      LEDStick.setLEDBrightness(brightness);
-      storeLedBrightness(brightness);
-      Serial.println(brightness);
+  if(new_brightness != g_brightness){
+      g_brightness = new_brightness;
+      LEDStick.setLEDBrightness(g_brightness);
+      storeLedBrightness(g_brightness);
+      Serial.println(g_brightness);
   }
 
 }
