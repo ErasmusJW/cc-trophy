@@ -73,6 +73,7 @@ const char* quotes[] = {
   "\" Quickie? \" - Dylan",
   "\" I don't have facebook\" - Cordell",
   "\" No! We don't need a fucking kebab machine\" - Craig",
+
 };
 
 // LED SETTINGS
