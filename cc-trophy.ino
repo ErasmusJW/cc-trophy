@@ -66,7 +66,9 @@ const char* quotes[] = {
   "\"Not my problem anymore!\" - Cordell",
   "\"Ai, maar ons kan kak praat\" - Cordell",
   "\"It's not that simple\" - Cordell",
-  "\"1. fieldpop, 2. ???, 3. profit!\" - Cordell"
+  "\"1. fieldpop, 2. ???, 3. profit!\" - Cordell",
+  "\"See you at 5\" - Bennie",
+  "\"I Realy Like Working on the FUM\" - No one"
 };
 
 // LED SETTINGS
