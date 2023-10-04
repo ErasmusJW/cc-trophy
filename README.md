@@ -14,14 +14,14 @@ Hope you enjoy!
 
 1. Power on the device via a USB cable.
 2. Use a PC to connect to the ESP32 access point called "CC Trophy" to set up an internet connection.
-3. Navigate to 192.168.8.1 in your browser to get to the WiFi Configuration UI.
+3. Navigate to 192.168.48.1 in your browser to get to the WiFi Configuration UI.
 4. Select your WiFi network and enter your password. 
    - You can choose to save this information to skip the WiFI setup next time it boots. (recommended, but optional)
    - Once you've saved a WiFi configuration, the ESP32 access point will be removed and will not be recreated on start-up.
 5. Once the device has WiFi access it will start to periodically GET www.fieldpop.io/get_time.
     - If the status code is 200, FieldPoP is ok and the trophy will be illuminated with a green to blue gradient. (reference to SMC Cloud and MSA)
     - If the status code is not 200, FieldPoP is not reachable and the trophy will pulse red.
-    - If your device loses its WiFi connection, the trophy will pulse blue.
+    - If your device loses its WiFi connection, the trophy will pulse yellow.
 7. Sit back, and enjoy the green-blue colored trophy :)
 
 ## LED Color Indicators
@@ -30,7 +30,7 @@ Hope you enjoy!
 | :------------- | :------------------------------------------- |
 | Rainbow        | On start-up (And who doesn't like rainbows?) |
 | White          | WiFi configurable                            |
-| Pulse blue     | WiFi connection lost                         |
+| Pulse yellow   | WiFi connection lost                         |
 | Green gradient | FieldPoP is ok                               |
 | Pulse red      | FieldPoP not ok, send help pls               |
 
@@ -45,6 +45,7 @@ Some basic input-output options to the ESP32 are available via a serial connecti
 | 'r'          | Reset saved WiFi configuration (Brings back the "CC Trophy" access point) |
 | '+'          | Chainable, increase LED brightness                                        |
 | '-'          | Chainable, decrease LED brightness                                        |
+| 'c'          | forces a wiffi connection                                                 |
 
 ## Further Customization
 
