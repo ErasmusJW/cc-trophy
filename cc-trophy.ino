@@ -80,8 +80,8 @@ const char *quotes[] = {
 };
 
 // LED SETTINGS
-#define BRIGHTNESS_MAX 31
-#define BRIGHTNESS_MIN 6
+#define BRIGHTNESS_MAX 20 // the limit is actually 31, but 31 all white draws to much current causing a crash
+#define BRIGHTNESS_MIN 8
 
 unsigned long secTimer = 0;
 
@@ -94,11 +94,11 @@ void setAppStatus(uint8_t status)
     WalkingRainbow(30, 10, 100);
     break;
   case E_WIFI_NOT_CONFIGURED:
-    LEDStick.setLEDColor(BS_APPORVED_NICE_RED);
+    LEDStick.setLEDColor(240,240,240);
     LED_MODE = SOLID_BRU;
     break;
   case E_WIFI_NOT_CONNECTED:
-    LEDStick.setLEDColor(BS_APPORVED_NICE_BLUE);
+    LEDStick.setLEDColor(255,255,0);
     LED_MODE = PULSING_BRU;
     break;
   case E_WIFI_CONNECTED:
@@ -312,7 +312,7 @@ void checkWifiStatus()
 
 // std::map<const char *,std::function<void(int)>> serrialCommands;
 
-void serviceSerial(uint8_t new_brightness)
+void serviceSerial(uint8_t &new_brightness)
 {
   while (Serial.available() > 0)
   {
@@ -373,7 +373,10 @@ void loop()
   auto now = millis();
   if (now - secTimer > 10000)
   {
-    Serial.println("I;m alive");
+    // Print quote-of-the-day
+    uint8_t randomQuoteIndex = random((*(&quotes + 1) - quotes) - 1);
+    Serial.println(quotes[randomQuoteIndex]);
+    wm.setTitle(quotes[randomQuoteIndex]);
     secTimer = now;
     checkWifiStatus();
   }

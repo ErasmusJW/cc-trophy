@@ -129,20 +129,20 @@ struct stepWithDelay {
 
 namespace effects {
   
-#define PULSE_DELTA 5
+#define PULSE_DELTA 6
 
 stepWithDelay<8> pulse = {
   0,
   0,
   {
-    std::make_tuple(2000, []() { LEDStick.setLEDBrightness(g_brightness - PULSE_DELTA); }),
-    std::make_tuple(100, []() { LEDStick.setLEDBrightness(g_brightness); }),
-    std::make_tuple(100, []() { LEDStick.setLEDBrightness(g_brightness - PULSE_DELTA); }),
-    std::make_tuple(100, []() { LEDStick.setLEDBrightness(g_brightness); }),
-    std::make_tuple(100, []() { LEDStick.setLEDBrightness(g_brightness - PULSE_DELTA); }),
-    std::make_tuple(100, []() { LEDStick.setLEDBrightness(g_brightness); }),
-    std::make_tuple(100, []() { LEDStick.setLEDBrightness(g_brightness - PULSE_DELTA); }),
-    std::make_tuple(100, []() { LEDStick.setLEDBrightness(g_brightness) ; }),
+    std::make_tuple(1500, []() { LEDStick.setLEDBrightness(g_brightness - PULSE_DELTA); }),
+    std::make_tuple(150, []() { LEDStick.setLEDBrightness(g_brightness); }),
+    std::make_tuple(150, []() { LEDStick.setLEDBrightness(g_brightness - PULSE_DELTA); }),
+    std::make_tuple(150, []() { LEDStick.setLEDBrightness(g_brightness); }),
+    std::make_tuple(150, []() { LEDStick.setLEDBrightness(g_brightness - PULSE_DELTA); }),
+    std::make_tuple(150, []() { LEDStick.setLEDBrightness(g_brightness); }),
+    std::make_tuple(150, []() { LEDStick.setLEDBrightness(g_brightness - PULSE_DELTA); }),
+    std::make_tuple(150, []() { LEDStick.setLEDBrightness(g_brightness) ; }),
   }
 };
 }
