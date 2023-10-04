@@ -75,6 +75,8 @@ const char *quotes[] = {
     "\"Working from home today\" - Gateway Team",
     "\"Chillas\" - Riaan",
     "\"Have I told you about my braai that doesn't\n    work during loadshedding?\" - Craig",
+    "\"Working from home. Dishwasher problems...Shame Cordell what's wrong with Joanne? \"- Craig",
+    
 };
 
 // LED SETTINGS
