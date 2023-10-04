@@ -73,7 +73,9 @@ const char* quotes[] = {
   "\" Quickie? \" - Dylan",
   "\" I don't have facebook\" - Cordell",
   "\" No! We don't need a fucking kebab machine\" - Craig",
-
+  "\"Working from home today\" - Gateway Team",
+  "\"Chillas\" - Riaan",
+  "\"Have I told you about my braai that doesn't\n    work during loadshedding?\" - Craig",
 };
 
 // LED SETTINGS
