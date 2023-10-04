@@ -69,7 +69,10 @@ const char* quotes[] = {
   "\"1. fieldpop, 2. ???, 3. profit!\" - Cordell",
   "\"See you at 5\" - Bennie",
   "\"I Realy Like Working on the FUM\" - No one",
-  "\"A throphy? Thats the fucking dumbest idea in the world\" - Harold"
+  "\"A throphy? Thats the fucking dumbest idea in the world\" - Harold",
+  "\" Quickie? \" - Dylan",
+  "\" I don't have facebook\" - Cordell",
+  "\" No! We don't need a fucking kebab machine\" - Craig",
 };
 
 // LED SETTINGS
