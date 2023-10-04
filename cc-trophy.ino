@@ -68,7 +68,8 @@ const char* quotes[] = {
   "\"It's not that simple\" - Cordell",
   "\"1. fieldpop, 2. ???, 3. profit!\" - Cordell",
   "\"See you at 5\" - Bennie",
-  "\"I Realy Like Working on the FUM\" - No one"
+  "\"I Realy Like Working on the FUM\" - No one",
+  "\"A throphy? Thats the fucking dumbest idea in the world\" - Harold"
 };
 
 // LED SETTINGS
